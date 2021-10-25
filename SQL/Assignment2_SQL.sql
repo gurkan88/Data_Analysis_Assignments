@@ -73,6 +73,31 @@ FROM		Actions
 WHERE		[Action] = 'Order'
 GROUP BY	Adv_Type
 
+---------------
+--2
+
+select	A.Adv_Type, A.Total, Number_of_order
+from	(SELECT		Adv_Type, COUNT([Action]) Total
+		FROM		Actions
+		GROUP BY	Adv_Type) A
+join	(SELECT		Adv_Type, COUNT([Action]) Number_of_order
+		FROM		Actions 
+		WHERE		[Action] = 'Order'
+		GROUP BY	Adv_Type
+		) B
+on A.Adv_Type = B.Adv_Type
+
+--Alternative - 2
+SELECT Adv_Type, Count([Action]) As Num_Action, (SELECT Count([Action]) FROM Actions WHERE [Action] = 'Order' AND Adv_Type = 'A' ) As Num_order
+FROM Actions
+WHERE Adv_Type = 'A'
+GROUP BY Adv_Type
+UNION
+SELECT Adv_Type, Count([Action]) As Num_Action, (SELECT Count([Action]) FROM Actions WHERE [Action] = 'Order' AND Adv_Type = 'B' ) As Num_order
+FROM Actions
+WHERE Adv_Type = 'B'
+GROUP BY Adv_Type
+
 
 ---test---------------------------------
 DECLARE @test DECIMAL(18,6) = 123.456789
@@ -94,5 +119,6 @@ JOIN		(SELECT		Adv_Type, COUNT([Action]) Number_of_order
 			WHERE		[Action] = 'Order'
 			GROUP BY	Adv_Type) Y
 			ON	X.Adv_Type = Y.Adv_Type
+
 
 
